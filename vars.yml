@@ -24,4 +24,4 @@ glusterfs_ppa_version: "3.8"
 
 gluster_mount_dir: /mnt/gluster
 gluster_brick_dir: /data/brick
-gluster_brick_name: gv0
+gluster_volume_name: gv0

@@ -13,7 +13,8 @@ Vagrant.configure("2") do |config|
 
   nodes = [
     { :hostname => 'gluster-01', :ip => '172.16.0.10' },
-    { :hostname => 'gluster-02', :ip => '172.16.0.11' }
+    { :hostname => 'gluster-02', :ip => '172.16.0.11' },
+    { :hostname => 'gluster-03', :ip => '172.16.0.12' }
   ]
 
   nodes.each do |node|
@@ -22,7 +23,7 @@ Vagrant.configure("2") do |config|
       config.vm.network :private_network, ip: node[:ip]
 
       # When last node is booted, provision with Ansible
-      if node[:hostname] == "gluster-02"
+      #if node[:hostname] == "gluster-02"
         config.vm.provision "ansible" do |ansible|
           ansible.playbook = "provision.yml"
           ansible.inventory_path = "inventory"
@@ -30,7 +31,7 @@ Vagrant.configure("2") do |config|
           ansible.limit = "all"
           ansible.verbose = true
         end
-      end
+      #end
     end
   end
 end

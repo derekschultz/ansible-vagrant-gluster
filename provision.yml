@@ -1,6 +1,6 @@
 ---
 - hosts: gluster
-  become: true
+  become: yes
   become_method: sudo
 
   vars_files:
@@ -20,22 +20,18 @@
     - name: Configure Gluster volume
       gluster_volume:
         state: present
-        name: "{{ gluster_brick_name }}"
-        brick: "{{ gluster_brick_dir }}/{{ gluster_brick_name }}"
-        replicas: 2
+        name: "{{ gluster_volume_name }}"
+        brick: "{{ gluster_brick_dir }}/{{ gluster_volume_name }}"
+        replicas: 3
         cluster: "{{ groups.gluster | join(',') }}"
-        options:
-          network.ping-timeout: '5'
-          performance.flush-behind: 'off'
-          nfs.disable: 'on'
         host: "{{ inventory_hostname }}"
-        force: true
+        force: yes
       run_once: true
 
     - name: Ensure Gluster volume is mounted
       mount:
         name: "{{ gluster_mount_dir }}"
-        src: "{{ inventory_hostname }}:/{{ gluster_brick_name }}"
+        src: "{{ inventory_hostname }}:/{{ gluster_volume_name }}"
         fstype: glusterfs
         opts: "defaults,_netdev"
         state: mounted

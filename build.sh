@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euf -o pipefail
+# set -euf -o pipefail
 
 which ansible-galaxy \
     && ansible-galaxy install -r requirements.yml -p roles

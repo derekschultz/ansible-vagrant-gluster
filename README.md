@@ -1,6 +1,6 @@
 # GlusterFS - POC using Vagrant and Ansible
 
-A two-node replicated GlusterFS storage cluster built with Vagrant and Ansible.
+A three-node replicated GlusterFS storage cluster built with Vagrant and Ansible.
 
 ## Requirements
 
@@ -13,9 +13,9 @@ A two-node replicated GlusterFS storage cluster built with Vagrant and Ansible.
 * Everything runs on Vagrant (using the Virtualbox provider)
 * Ansible is used to provision the machines and configure GlusterFS
 * All systems running Ubuntu 16.04
-  * 2 intances in total to demonstrate data replication in cluster
+  * 3 intances in total to demonstrate data replication in cluster
 
-### 1. Build it
+### 1. Build
 
 Here we use the Virtualbox provider for Vagrant to spin up machines.
 
@@ -25,70 +25,106 @@ Here we use the Virtualbox provider for Vagrant to spin up machines.
 
 By using the Vagrant Ansible provider we can automate the system configuration as follows:
 
-1. Set firewall rules. Install Gluster client and server packages and start server daemon
-    1. These are roles from community galaxy playbooks (see [requirements.yml](requirements.yml))
-1. Create necessary Gluster brick and mount directories
-1. Create a new Gluster volume and start it
-    1. Uses `gluster_volume` module
-1. Connect Gluster nodes together through peer probe
-    1. Replica count for volume: 2
-1. Mount the Gluster volume
+* Set firewall rules to allow Gluster nodes to communicate
+* Install Gluster client and server packages and start server daemon
+  * These are roles from community galaxy playbooks (see [requirements.yml](requirements.yml))
+* Create necessary Gluster brick and mount directories
+* Create a new Gluster volume and start it
+  * Uses `gluster_volume` module
+* Probe for peer nodes
+  * Replica count for volume: 3
+* Mount the Gluster volume
 
-### 2. Verify / Test it
+### 2. Verify / Test
 
 ```bash
 $ ansible gluster -i inventory -a "gluster peer status" -s
-172.16.0.11 | SUCCESS | rc=0 >>
-Number of Peers: 1
-
-Hostname: 172.16.0.10
-Uuid: 7b2e4a3f-6876-4d46-95c1-a2304759f144
-State: Peer in Cluster (Connected)
-
 172.16.0.10 | SUCCESS | rc=0 >>
-Number of Peers: 1
+Number of Peers: 2
 
 Hostname: 172.16.0.11
-Uuid: 41885a9b-06bf-46f5-a5ac-596baa524227
+Uuid: 33a9107a-7d7e-46ad-b4d2-a008c3021ff6
+State: Peer in Cluster (Connected)
+
+Hostname: 172.16.0.12
+Uuid: 98f1e2c8-6f7e-4de0-96d9-9ac5ad4ace49
+State: Peer in Cluster (Connected)
+
+172.16.0.12 | SUCCESS | rc=0 >>
+Number of Peers: 2
+
+Hostname: 172.16.0.10
+Uuid: f09844c2-64e8-43ce-9bca-ee603403e8d1
+State: Peer in Cluster (Connected)
+
+Hostname: 172.16.0.11
+Uuid: 33a9107a-7d7e-46ad-b4d2-a008c3021ff6
+State: Peer in Cluster (Connected)
+
+172.16.0.11 | SUCCESS | rc=0 >>
+Number of Peers: 2
+
+Hostname: 172.16.0.10
+Uuid: f09844c2-64e8-43ce-9bca-ee603403e8d1
+State: Peer in Cluster (Connected)
+
+Hostname: 172.16.0.12
+Uuid: 98f1e2c8-6f7e-4de0-96d9-9ac5ad4ace49
 State: Peer in Cluster (Connected)
 ```
 
 ```bash
 $ ansible gluster -i inventory -a "gluster volume info" -s
-172.16.0.10 | SUCCESS | rc=0 >>
-
-Volume Name: gv0
-Type: Replicate
-Volume ID: 93844a33-91bd-4df7-a696-0aceab4128ee
-Status: Started
-Snapshot Count: 0
-Number of Bricks: 1 x 2 = 2
-Transport-type: tcp
-Bricks:
-Brick1: 172.16.0.10:/data/brick/gv0
-Brick2: 172.16.0.11:/data/brick/gv0
-Options Reconfigured:
-performance.flush-behind: off
-network.ping-timeout: 5
-transport.address-family: inet
-performance.readdir-ahead: on
-nfs.disable: on
-
 172.16.0.11 | SUCCESS | rc=0 >>
 
 Volume Name: gv0
 Type: Replicate
-Volume ID: 93844a33-91bd-4df7-a696-0aceab4128ee
+Volume ID: ddcfb66e-fcc3-4c84-8b96-422272ff7984
 Status: Started
 Snapshot Count: 0
-Number of Bricks: 1 x 2 = 2
+Number of Bricks: 1 x 3 = 3
 Transport-type: tcp
 Bricks:
 Brick1: 172.16.0.10:/data/brick/gv0
 Brick2: 172.16.0.11:/data/brick/gv0
+Brick3: 172.16.0.12:/data/brick/gv0
 Options Reconfigured:
-performance.flush-behind: off
-network.ping-timeout: 5
+transport.address-family: inet
+performance.readdir-ahead: on
+nfs.disable: on
+
+172.16.0.10 | SUCCESS | rc=0 >>
+
+Volume Name: gv0
+Type: Replicate
+Volume ID: ddcfb66e-fcc3-4c84-8b96-422272ff7984
+Status: Started
+Snapshot Count: 0
+Number of Bricks: 1 x 3 = 3
+Transport-type: tcp
+Bricks:
+Brick1: 172.16.0.10:/data/brick/gv0
+Brick2: 172.16.0.11:/data/brick/gv0
+Brick3: 172.16.0.12:/data/brick/gv0
+Options Reconfigured:
+transport.address-family: inet
+performance.readdir-ahead: on
+nfs.disable: on
+
+172.16.0.12 | SUCCESS | rc=0 >>
+
+Volume Name: gv0
+Type: Replicate
+Volume ID: ddcfb66e-fcc3-4c84-8b96-422272ff7984
+Status: Started
+Snapshot Count: 0
+Number of Bricks: 1 x 3 = 3
+Transport-type: tcp
+Bricks:
+Brick1: 172.16.0.10:/data/brick/gv0
+Brick2: 172.16.0.11:/data/brick/gv0
+Brick3: 172.16.0.12:/data/brick/gv0
+Options Reconfigured:
 transport.address-family: inet
 performance.readdir-ahead: on
 nfs.disable: on
