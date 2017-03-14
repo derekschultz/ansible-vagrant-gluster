@@ -22,8 +22,8 @@ Vagrant.configure("2") do |config|
       config.vm.hostname = node[:hostname]
       config.vm.network :private_network, ip: node[:ip]
 
-      # When last node is booted, provision with Ansible
-      #if node[:hostname] == "gluster-02"
+      # gluster-01 will serve as client, so leave that out
+      if node[:hostname] == "gluster-02"
         config.vm.provision "ansible" do |ansible|
           ansible.playbook = "provision.yml"
           ansible.inventory_path = "inventory"
@@ -31,7 +31,7 @@ Vagrant.configure("2") do |config|
           ansible.limit = "all"
           ansible.verbose = true
         end
-      #end
+      end
     end
   end
 end

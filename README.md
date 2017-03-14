@@ -6,7 +6,7 @@ A three-node replicated GlusterFS storage cluster built with Vagrant and Ansible
 
 1. [Vagrant](https://www.vagrantup.com/downloads.html)
 1. [Virtualbox](https://www.virtualbox.org/wiki/Downloads) (required for Vagrant)
-1. [Ansible](http://docs.ansible.com/ansible/intro_installation.html) 1.9+
+1. [Ansible](http://docs.ansible.com/ansible/intro_installation.html) >= 1.9
 
 ## Guide
 

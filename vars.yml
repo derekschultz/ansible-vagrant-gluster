@@ -10,7 +10,6 @@ firewall_allowed_tcp_ports:
   - 24007
   # 49152+ for Gluster 3.4+ (one port per each brick)
   - 49152
-  - 49153
   # Gluster inline NFS server
   - 38465
   - 38466
