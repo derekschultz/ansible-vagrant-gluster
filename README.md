@@ -1,7 +1,6 @@
 # GlusterFS - POC using Vagrant and Ansible
 
-A two-node GlusterFS storage cluster with sufficient fault tolerance to survive
-a single node failure with no loss of data.
+A two-node replicated GlusterFS storage cluster built with Vagrant and Ansible.
 
 ## Requirements
 
@@ -14,7 +13,7 @@ a single node failure with no loss of data.
 * Everything runs on Vagrant (using the Virtualbox provider)
 * Ansible is used to provision the machines and configure GlusterFS
 * All systems running Ubuntu 16.04
-  * 2 intances in total to demonstrate data persistence in cluster
+  * 2 intances in total to demonstrate data replication in cluster
 
 ### 1. Build it
 
@@ -95,4 +94,13 @@ performance.readdir-ahead: on
 nfs.disable: on
 ```
 
-### 3. Break it
+For testing, run:
+
+```bash
+$ ./test.sh
+```
+
+To mimick client behavior, this script will add a new mount for the GlusterFS volume
+created in the steps above and will sequentially copy an arbitrary file 100x.
+We then check the GlusterFS mount points on each host and list the number of files.
+You should see 100 files on each host to show replication is working properly.
